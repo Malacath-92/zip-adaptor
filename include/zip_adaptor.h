@@ -7,8 +7,13 @@
 template<class... T>
 class zip_adaptor;
 
+#ifndef ZIP_VERBOSE
+template<class... T>
+constexpr zip_adaptor<T...> zip(T&& ...iteratables);
+#else
 template<class... T>
 constexpr zip_adaptor<T...> make_zip_adaptor(T&& ...iteratables);
+#endif
 
 template<class... T>
 class zip_adaptor {

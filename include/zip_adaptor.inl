@@ -9,10 +9,17 @@
 #endif
 
 /// Adaptor implementation
+#ifndef ZIP_VERBOSE
+template<class... T>
+inline constexpr zip_adaptor<T...> zip(T&&... iteratables) {
+	return zip_adaptor<T...>(std::forward<T>(iteratables)...);
+}
+#else
 template<class... T>
 inline constexpr zip_adaptor<T...> make_zip_adaptor(T&&... iteratables) {
 	return zip_adaptor<T...>(std::forward<T>(iteratables)...);
 }
+#endif
 
 template<class... T>
 inline constexpr zip_adaptor<T...>::zip_adaptor(T&&... iteratables) : mIterables(std::forward_as_tuple(std::forward<T>(iteratables)...)) {
