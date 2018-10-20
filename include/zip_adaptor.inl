@@ -1,5 +1,7 @@
 #include "zip_adaptor.h"
 
+#include <utility>
+
 #ifdef _MSVC_LANG
 #define dependent_template
 #else
@@ -131,8 +133,16 @@ inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<Ite
 
 template<class... T>
 template<class... IterT>
+
 inline constexpr bool zip_adaptor<T...>::zip_iterator<IterT...>::operator!=(const zip_iterator& rhs) const {
-	return detail::not_equal(mIters, rhs.mIters);
+	using IterTuple = decltype(mIters);
+	auto not_equal = [](const IterTuple& lhs, const IterTuple& rhs) {
+		constexpr std::size_t tuple_size = std::tuple_size_v<std::remove_reference_t<decltype(lhs)>>;
+		static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(rhs)>>, "Tuples need to be of same size");
+		constexpr auto indices = std::make_index_sequence<tuple_size>();
+		return detail::not_equal_impl(lhs, rhs, indices);
+	};
+	return not_equal(mIters, rhs.mIters);
 }
 
 template<class... T>
