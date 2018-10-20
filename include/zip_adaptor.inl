@@ -103,12 +103,9 @@ inline constexpr zip_adaptor<T...>::zip_iterator<IterT...>::zip_iterator(IterT..
 
 template<class... T>
 template<class... IterT>
-#ifdef _MSVC_LANG
 inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>& zip_adaptor<T...>::zip_iterator<IterT...>::operator++() {
-#else
-#endif
-increment();
-return *this;
+	increment();
+	return *this;
 }
 template<class... T>
 template<class... IterT>
