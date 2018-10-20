@@ -17,7 +17,6 @@ public:
 	class zip_iterator {
 	public:
 		using value_type = std::tuple<decltype(*std::declval<IterT>())...>;
-		using const_value_type = std::tuple<decltype(*std::declval<const IterT>())...>;
 
 		constexpr zip_iterator(IterT... iters);
 
@@ -37,7 +36,6 @@ public:
 		constexpr bool operator!=(const zip_iterator& rhs) const;
 
 		constexpr value_type operator*();
-		constexpr const_value_type operator*() const;
 
 	private:
 		constexpr void increment();
@@ -48,7 +46,7 @@ public:
 	};
 
 	using iterator = zip_iterator<decltype(std::declval<T>().begin())...>;
-	using const_iterator = zip_iterator<decltype(std::declval<const T>().begin())...>;
+	using const_iterator = zip_iterator<decltype(std::declval<const T>().cbegin())...>;
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 

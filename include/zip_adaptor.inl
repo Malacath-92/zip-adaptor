@@ -41,7 +41,7 @@ inline constexpr typename zip_adaptor<T...>::iterator zip_adaptor<T...>::begin()
 template<class... T>
 inline constexpr typename zip_adaptor<T...>::const_iterator zip_adaptor<T...>::begin() const noexcept {
 	auto begin_impl = [](auto&... iteratables) {
-		return iterator(iteratables.begin()...);
+		return const_iterator(iteratables.begin()...);
 	};
 	return std::apply(begin_impl, mIterables);
 }
@@ -55,7 +55,7 @@ inline constexpr typename zip_adaptor<T...>::iterator zip_adaptor<T...>::end() n
 template<class... T>
 inline constexpr typename zip_adaptor<T...>::const_iterator zip_adaptor<T...>::end() const noexcept {
 	auto end_impl = [](auto&... iteratables) {
-		return iterator(iteratables.end()...);
+		return const_iterator(iteratables.end()...);
 	};
 	return std::apply(end_impl, mIterables);
 }
@@ -148,14 +148,6 @@ inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<Ite
 	// TODO: Eliminate code duplication?
 	// Removing code duplication here may not be worth it because it will be done
 	// in favour of much template magic?
-	auto dereference_impl = [](IterT... iters) {
-		return std::forward_as_tuple(*iters...);
-	};
-	return std::apply(dereference_impl, mIters);
-}
-template<class... T>
-template<class... IterT>
-inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>::const_value_type zip_adaptor<T...>::zip_iterator<IterT...>::operator*() const {
 	auto dereference_impl = [](IterT... iters) {
 		return std::forward_as_tuple(*iters...);
 	};
