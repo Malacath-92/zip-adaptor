@@ -6,8 +6,6 @@
 
 template<class... T>
 class zip_adaptor;
-template<class... T>
-class zip_iterator;
 
 template<class... T>
 constexpr zip_adaptor<T...> make_zip_adaptor(T&& ...iteratables);
@@ -48,6 +46,7 @@ public:
 		using iterator_tuple = std::tuple<IterT...>;
 		iterator_tuple mIters;
 	};
+
 	using iterator = zip_iterator<decltype(std::declval<T>().begin())...>;
 	using const_iterator = zip_iterator<decltype(std::declval<const T>().begin())...>;
 	using reverse_iterator = std::reverse_iterator<iterator>;
