@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <array>
 
 #include "zip_adaptor.h"
@@ -19,9 +20,9 @@ constexpr bool constexpr_const_iteration() {
 #else
 	for(auto[a, b, c] : zip(first, second, third)) {
 #endif
-		static_assert(std::is_same_v<decltype(a), const int&>, "Iterating through wrong type, should be const int&");
-		static_assert(std::is_same_v<decltype(b), const int&>, "Iterating through wrong type, should be const int&");
-		static_assert(std::is_same_v<decltype(c), const int&>, "Iterating through wrong type, should be const int&");
+		static_assert(std::is_same_v<decltype(a), const int&>, "constexpr_const_iteration failed: decltpye(a) != const int&");
+		static_assert(std::is_same_v<decltype(b), const int&>, "constexpr_const_iteration failed: decltpye(b) != const int&");
+		static_assert(std::is_same_v<decltype(c), const int&>, "constexpr_const_iteration failed: decltpye(c) != const int&");
 		if(b != (a + 1) * 3)
 			return false;
 		if(c != a * b)
@@ -52,9 +53,9 @@ constexpr bool constexpr_non_const_iteration() {
 #else
 	for(auto[a, b, c] : zip(first, second, third)) {
 #endif
-		static_assert(std::is_same_v<decltype(a), const int&>, "Iterating through wrong type, should be const int&");
-		static_assert(std::is_same_v<decltype(b), int&>, "Iterating through wrong type, should be int&");
-		static_assert(std::is_same_v<decltype(c), int&>, "Iterating through wrong type, should be int&");
+		static_assert(std::is_same_v<decltype(a), const int&>, "constexpr_non_const_iteration failed: decltpye(a) != const int&");
+		static_assert(std::is_same_v<decltype(b), int&>, "constexpr_non_const_iteration failed: decltpye(b) != int&");
+		static_assert(std::is_same_v<decltype(c), int&>, "constexpr_non_const_iteration failed: decltpye(c) != int&");
 		if(b != (a + 1) * 3)
 			return false;
 		if(c != a * b)
@@ -103,9 +104,9 @@ constexpr bool constexpr_no_copies_no_moves() {
 #else
 	for(auto[a, b, c] : zip(first, second, third)) {
 #endif
-		static_assert(std::is_same_v<decltype(a), const ExpensiveToCopyOrMove&>, "Iterating through wrong type, should be const ExpensiveToCopyOrMove&");
-		static_assert(std::is_same_v<decltype(b), const ExpensiveToCopyOrMove&>, "Iterating through wrong type, should be const ExpensiveToCopyOrMove&");
-		static_assert(std::is_same_v<decltype(c), const ExpensiveToCopyOrMove&>, "Iterating through wrong type, should be const ExpensiveToCopyOrMove&");
+		static_assert(std::is_same_v<decltype(a), const ExpensiveToCopyOrMove&>, "constexpr_no_copies_no_moves failed: decltpye(a) != const ExpensiveToCopyOrMove&");
+		static_assert(std::is_same_v<decltype(b), const ExpensiveToCopyOrMove&>, "constexpr_no_copies_no_moves failed: decltpye(b) != const ExpensiveToCopyOrMove&");
+		static_assert(std::is_same_v<decltype(c), const ExpensiveToCopyOrMove&>, "constexpr_no_copies_no_moves failed: decltpye(c) != const ExpensiveToCopyOrMove&");
 		if(b.v != (a.v + 1) * 3)
 			return false;
 		if(c.v != a.v * b.v)
