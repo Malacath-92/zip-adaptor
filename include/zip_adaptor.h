@@ -2,8 +2,6 @@
 
 #include <tuple>
 
-#include "detail.h"
-
 template<class... T>
 class zip_adaptor;
 
