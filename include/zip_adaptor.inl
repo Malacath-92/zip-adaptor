@@ -145,7 +145,6 @@ inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<Ite
 
 template<class... T>
 template<class... IterT>
-
 inline constexpr bool zip_adaptor<T...>::zip_iterator<IterT...>::operator!=(const zip_iterator& rhs) const {
 	using IterTuple = decltype(mIters);
 	auto not_equal = [](const IterTuple& lhs, const IterTuple& rhs) {
@@ -160,9 +159,6 @@ inline constexpr bool zip_adaptor<T...>::zip_iterator<IterT...>::operator!=(cons
 template<class... T>
 template<class... IterT>
 inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>::value_type zip_adaptor<T...>::zip_iterator<IterT...>::operator*() {
-	// TODO: Eliminate code duplication?
-	// Removing code duplication here may not be worth it because it will be done
-	// in favour of much template magic?
 	auto dereference_impl = [](IterT... iters) {
 		return std::forward_as_tuple(*iters...);
 	};

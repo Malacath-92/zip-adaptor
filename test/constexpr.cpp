@@ -74,12 +74,6 @@ constexpr bool constexpr_non_const_iteration() {
 static_assert(constexpr_non_const_iteration(), "Test constexpr_non_const_iteration failed");
 
 constexpr bool constexpr_no_copies_no_moves() {
-	auto swap = [](auto& lhs, auto& rhs) {
-		auto tmp = std::move(lhs);
-		lhs = std::move(rhs);
-		rhs = std::move(tmp);
-	};
-
 	struct ExpensiveToCopyOrMove {
 		ExpensiveToCopyOrMove() = delete;
 		constexpr ExpensiveToCopyOrMove(const ExpensiveToCopyOrMove&) = delete;
