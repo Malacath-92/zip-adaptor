@@ -344,7 +344,7 @@ void exceptions() {
 	try {
 		const std::vector<int> small(10, 0);
 		const std::vector<int> large(100, 0);
-		const auto zipper = zip(small, large);
+		[[maybe_unused]] const auto zipper = zip(small, large);
 		throw std::logic_error("exceptions " + failed + ": std::length_error was not thrown");
 	}
 	catch(std::length_error& e) {
