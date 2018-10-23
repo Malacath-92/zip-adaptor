@@ -347,7 +347,7 @@ void exceptions() {
 		const auto zipper = zip(small, large);
 		throw std::logic_error("exceptions " + failed + ": std::length_error was not thrown");
 	}
-	catch(std::length_error e) {
+	catch(std::length_error& e) {
 		std::cout << "std::length_error caught: " << e.what() << std::endl;
 	}
 }

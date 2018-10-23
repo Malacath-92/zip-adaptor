@@ -35,7 +35,7 @@ int main() {
 		exceptions();
 		std::cout << "exceptions " + succeeded << std::endl;
 	}
-	catch(std::logic_error e) {
+	catch(std::logic_error& e) {
 		std::cout << e.what() << std::endl;
 	}
 #endif
