@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <array>
 
+#define ZIP_NAMESPACE
 #include "zip_adaptor.h"
 
 #ifndef SKIP_CONSTEXPR_TESTS

@@ -13,6 +13,9 @@
 #include <map>
 #include <unordered_map>
 
+#define ZIP_NAMESPACE
+#include "zip_adaptor.h"
+
 #ifndef SKIP_RUNTIME_TESTS
 
 void homogeneous_containers_homogeneous_types_const_iteration() {

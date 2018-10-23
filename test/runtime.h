@@ -1,5 +1,3 @@
-#include "zip_adaptor.h"
-
 #include <string>
 
 const auto succeeded = std::string("\033[32msucceeded\033[0m");
