@@ -19,7 +19,7 @@ namespace ZIP_NAMESPACE {
 	constexpr zip_adaptor<forwarded_type<T>...> zip(T&& ...iteratables);
 	#else
 	template<class... T>
-	constexpr zip_adaptor<T...> make_zip_adaptor(T&& ...iteratables);
+	constexpr zip_adaptor<forwarded_type<T>...> make_zip_adaptor(T&& ...iteratables);
 	#endif
 
 	template<class... T>

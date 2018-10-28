@@ -36,8 +36,8 @@ namespace ZIP_NAMESPACE {
 	}
 #else
 	template<class... T>
-	inline constexpr zip_adaptor<T...> make_zip_adaptor(T&&... iteratables) {
-		return zip_adaptor<T...>(std::forward<T>(iteratables)...);
+	inline constexpr zip_adaptor<forwarded_type<T>...> make_zip_adaptor(T&&... iteratables) {
+		return zip_adaptor<forwarded_type<T>...>(std::forward<T>(iteratables)...);
 	}
 #endif
 
