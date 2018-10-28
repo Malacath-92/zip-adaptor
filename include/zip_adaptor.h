@@ -23,11 +23,12 @@ namespace ZIP_NAMESPACE {
 	public:
 		template<class... IterT>
 		class zip_iterator {
+			friend class zip_adaptor;
 		public:
 			using value_type = std::tuple<decltype(*std::declval<IterT>())...>;
 
 			constexpr zip_iterator(IterT... iters);
-
+			
 			zip_iterator() = delete;
 			constexpr zip_iterator(const zip_iterator&) = default;
 			constexpr zip_iterator(zip_iterator&&) = default;
@@ -35,9 +36,11 @@ namespace ZIP_NAMESPACE {
 			constexpr zip_iterator& operator=(const zip_iterator&) = default;
 			constexpr zip_iterator& operator=(zip_iterator&&) = default;
 
+			constexpr zip_iterator& operator+(int);
 			constexpr zip_iterator& operator++();
 			constexpr zip_iterator operator++(int);
 
+			constexpr zip_iterator& operator-(int);
 			constexpr zip_iterator& operator--();
 			constexpr zip_iterator operator--(int);
 
@@ -88,8 +91,16 @@ namespace ZIP_NAMESPACE {
 		constexpr std::size_t size() const noexcept;
 		constexpr bool empty() const noexcept;
 
+		iterator erase(iterator pos);
+		iterator erase(iterator first, iterator last);
+		template<class It = iterator, typename = std::enable_if_t<!std::is_same_v<It, const_iterator>>>
+		const_iterator erase(const_iterator pos);
+		template<class It = iterator, typename = std::enable_if_t<!std::is_same_v<It, const_iterator>>>
+		const_iterator erase(const_iterator first, const_iterator last);
+
 	private:
-		std::tuple<T&...> mIterables;
+		using iterable_tuple = std::tuple<T&...>;
+		iterable_tuple mIterables;
 	};
 }
 

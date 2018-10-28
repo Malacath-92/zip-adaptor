@@ -8,10 +8,8 @@
 #include <vector>
 #include <deque>
 #include <list>
-#include <set>
-#include <unordered_set>
 #include <map>
-#include <unordered_map>
+#include <set>
 
 #define ZIP_NAMESPACE
 #include "zip_adaptor.h"
@@ -350,6 +348,61 @@ void exceptions() {
 	catch(std::length_error& e) {
 		std::cout << "std::length_error caught: " << e.what() << std::endl;
 	}
+}
+
+void erase_const() {
+	std::vector<int> first(100);
+	std::generate(first.begin(), first.end(), [i = 0]() mutable { return i++; });
+	std::list<int> second(100);
+	std::generate(second.begin(), second.end(), []() { return rand(); });
+	std::map<int, int> third;
+	for(int i = 0; i < 100; i++) third.insert(std::make_pair(i, rand()));
+	std::set<int> fourth;
+	for(int i = 0; i < 100; i++) fourth.insert(rand());
+
+	auto zipper = zip(first, second, third, fourth);
+	for(auto it = zipper.cbegin(); it != zipper.cend();) {
+		auto[a, b, c, d] = *it;
+		if(a % 2 == 0) {
+			it = zipper.erase(it);
+		}
+		else {
+			it++;
+		}
+	}
+	if(zipper.size() != 50)
+		throw std::logic_error("erase_const " + failed + ": zipper.size() != 50");
+
+	zipper.erase(zipper.cbegin() + 10, zipper.cend());
+	if(zipper.size() != 10)
+		throw std::logic_error("erase_const " + failed + ": zipper.size() != 10");
+}
+void erase_non_const() {
+	std::vector<int> first(100);
+	std::generate(first.begin(), first.end(), [i = 0]() mutable { return i++; });
+	std::list<int> second(100);
+	std::generate(second.begin(), second.end(), []() { return rand(); });
+	std::map<int, int> third;
+	for(int i = 0; i < 100; i++) third.insert(std::make_pair(i, rand()));
+	std::set<int> fourth;
+	for(int i = 0; i < 100; i++) fourth.insert(rand());
+
+	auto zipper = zip(first, second, third, fourth);
+	for(auto it = zipper.begin(); it != zipper.end();) {
+		auto[a, b, c, d] = *it;
+		if(a % 2 == 0) {
+			it = zipper.erase(it);
+		}
+		else {
+			it++;
+		}
+	}
+	if(zipper.size() != 50)
+		throw std::logic_error("erase_non_const " + failed + ": zipper.size() != 50");
+
+	zipper.erase(zipper.cbegin() + 10, zipper.cend());
+	if(zipper.size() != 10)
+		throw std::logic_error("erase_non_const " + failed + ": zipper.size() != 10");
 }
 
 #endif

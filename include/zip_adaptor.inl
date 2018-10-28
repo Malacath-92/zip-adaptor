@@ -16,6 +16,16 @@ namespace ZIP_NAMESPACE {
 											 const std::integer_sequence<std::size_t, Indices...>&) {
 			return ((std::get<Indices>(lhs) != std::get<Indices>(rhs)) && ...);
 		}
+		template<class... T, class... U, std::size_t... Indices>
+		inline constexpr auto erase_impl(std::tuple<U&...>& iterables, std::tuple<T...>& iterators,
+										 const std::integer_sequence<std::size_t, Indices...>&) {
+			return std::make_tuple(std::get<Indices>(iterables).erase(std::get<Indices>(iterators))...);
+		}
+		template<class... T, class... U, std::size_t... Indices>
+		inline constexpr auto erase_impl(std::tuple<U&...>& iterables, std::tuple<T...>& firstIterators, std::tuple<T...>& lastIterators,
+										 const std::integer_sequence<std::size_t, Indices...>&) {
+			return std::make_tuple(std::get<Indices>(iterables).erase(std::get<Indices>(firstIterators), std::get<Indices>(lastIterators))...);
+		}
 	}
 
 	/// Adaptor implementation
@@ -111,6 +121,51 @@ namespace ZIP_NAMESPACE {
 		return rend();
 	}
 
+	template<class... T>
+	inline typename zip_adaptor<T...>::iterator zip_adaptor<T...>::erase(iterator pos) {
+		auto erase_impl = [](iterable_tuple& iterables, typename iterator::iterator_tuple& iterators) {
+			constexpr std::size_t tuple_size = std::tuple_size_v<std::remove_reference_t<decltype(iterables)>>;
+			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(iterators)>>, "Tuples need to be of same size");
+			constexpr auto indices = std::make_index_sequence<tuple_size>();
+			return detail::erase_impl(iterables, iterators, indices);
+		};
+		return std::apply([](auto&&... iters){ return iterator(iters...);  }, erase_impl(mIterables, pos.mIters));
+	}
+	template<class... T>
+	inline typename zip_adaptor<T...>::iterator zip_adaptor<T...>::erase(iterator first, iterator last) {
+		auto erase_impl = [](iterable_tuple& iterables, typename iterator::iterator_tuple& firstIterators, typename iterator::iterator_tuple& lastIterators) {
+			constexpr std::size_t tuple_size = std::tuple_size_v<std::remove_reference_t<decltype(iterables)>>;
+			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(firstIterators)>>, "Tuples need to be of same size");
+			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(lastIterators)>>, "Tuples need to be of same size");
+			constexpr auto indices = std::make_index_sequence<tuple_size>();
+			return detail::erase_impl(iterables, firstIterators, lastIterators, indices);
+		};
+		return std::apply([](auto&&... iters) { return iterator(iters...);  }, erase_impl(mIterables, first.mIters, last.mIters));
+	}
+	template<class... T>
+	template<class It, typename>
+	inline typename zip_adaptor<T...>::const_iterator zip_adaptor<T...>::erase(const_iterator pos) {
+		auto erase_impl = [](iterable_tuple& iterables, typename const_iterator::iterator_tuple& iterators) {
+			constexpr std::size_t tuple_size = std::tuple_size_v<std::remove_reference_t<decltype(iterables)>>;
+			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(iterators)>>, "Tuples need to be of same size");
+			constexpr auto indices = std::make_index_sequence<tuple_size>();
+			return detail::erase_impl(iterables, iterators, indices);
+		};
+		return std::apply([](auto&&... iters) { return const_iterator(iters...);  }, erase_impl(mIterables, pos.mIters));
+	}
+	template<class... T>
+	template<class It, typename>
+	inline typename zip_adaptor<T...>::const_iterator zip_adaptor<T...>::erase(const_iterator first, const_iterator last) {
+		auto erase_impl = [](iterable_tuple& iterables, typename const_iterator::iterator_tuple& firstIterators, typename const_iterator::iterator_tuple& lastIterators) {
+			constexpr std::size_t tuple_size = std::tuple_size_v<std::remove_reference_t<decltype(iterables)>>;
+			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(firstIterators)>>, "Tuples need to be of same size");
+			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(lastIterators)>>, "Tuples need to be of same size");
+			constexpr auto indices = std::make_index_sequence<tuple_size>();
+			return detail::erase_impl(iterables, firstIterators, lastIterators, indices);
+		};
+		return std::apply([](auto&&... iters) { return const_iterator(iters...);  }, erase_impl(mIterables, first.mIters, last.mIters));
+	}
+
 
 	/// Iterator implementation
 	template<class... T>
@@ -118,6 +173,12 @@ namespace ZIP_NAMESPACE {
 	inline constexpr zip_adaptor<T...>::zip_iterator<IterT...>::zip_iterator(IterT... iters) :
 		mIters(std::forward_as_tuple(iters...)) {}
 
+	template<class... T>
+	template<class... IterT>
+	inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>& zip_adaptor<T...>::zip_iterator<IterT...>::operator+(int i) {
+		for(int j = 0; j < i; j++) increment();
+		return *this;
+	}
 	template<class... T>
 	template<class... IterT>
 	inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>& zip_adaptor<T...>::zip_iterator<IterT...>::operator++() {
@@ -130,6 +191,12 @@ namespace ZIP_NAMESPACE {
 		auto a = *this;
 		increment();
 		return a;
+	}
+	template<class... T>
+	template<class... IterT>
+	inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>& zip_adaptor<T...>::zip_iterator<IterT...>::operator-(int i) {
+		for (int j = 0; j < i; j++) decrement();
+		return *this;
 	}
 	template<class... T>
 	template<class... IterT>
@@ -148,8 +215,7 @@ namespace ZIP_NAMESPACE {
 	template<class... T>
 	template<class... IterT>
 	inline constexpr bool zip_adaptor<T...>::zip_iterator<IterT...>::operator!=(const zip_iterator& rhs) const {
-		using IterTuple = decltype(mIters);
-		auto not_equal = [](const IterTuple& lhs, const IterTuple& rhs) {
+		auto not_equal = [](const iterator_tuple& lhs, const iterator_tuple& rhs) {
 			constexpr std::size_t tuple_size = std::tuple_size_v<std::remove_reference_t<decltype(lhs)>>;
 			static_assert(tuple_size == std::tuple_size_v<std::remove_reference_t<decltype(rhs)>>, "Tuples need to be of same size");
 			constexpr auto indices = std::make_index_sequence<tuple_size>();

@@ -19,4 +19,7 @@ void no_copies_no_moves_iteration();
 
 void exceptions();
 
+void erase_const();
+void erase_non_const();
+
 #endif
