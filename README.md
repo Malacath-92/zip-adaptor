@@ -41,7 +41,7 @@ You may use different types of containers as long as they support range-based fo
 
         using zipped_type = decltype(zipped_containers);
         using zipped_value_type = typename zipped_type::value_type;
-        
+
         std::vector<zipped_value_type> joined_containers;
         joined_containers.reserve(zipped_containers.size());
         for (auto zipped : zipped_containers)
@@ -55,15 +55,11 @@ Zip-adaptor supports the following features:
 
 * Creating a zipped range from heterogeneous container types
 * Creating a zipped range from const as well as non-const container types
+* Creating a zipped range from rvalues as well as lvalues
 * Erasing out of a zipped range
 * Throws _std::length_error_ if attempting to zip ranges of different sizes
 * Fully constexpr qualified
 * Compiles and runs on _MSVC_, _gcc_ and _clang_
-
-Planned features are:
-
-* Creating a zipped range from rvalues as well as lvalues
-* Supplying reasonable member typedefs to deal with copying from the zip iterator
 
 ## Tests
 
