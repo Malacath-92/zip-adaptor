@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+// Return values:
+//		 0 = tests succeeded
+//		-1 = tests failed
 int main() {
 #ifndef SKIP_RUNTIME_TESTS
 	try {
@@ -44,6 +47,8 @@ int main() {
 	}
 	catch(std::logic_error& e) {
 		std::cout << e.what() << std::endl;
+		return -1;
 	}
 #endif
+	return 0;
 }
