@@ -29,7 +29,8 @@ namespace ZIP_NAMESPACE {
 		class zip_iterator {
 			friend class zip_adaptor;
 		public:
-			using value_type = std::tuple<decltype(*std::declval<IterT>())...>;
+			using value_type = std::tuple<std::remove_reference_t<decltype(*std::declval<IterT>())>...>;
+			using reference = std::tuple<decltype(*std::declval<IterT>())...>;
 
 			constexpr zip_iterator(IterT... iters);
 			
@@ -50,7 +51,7 @@ namespace ZIP_NAMESPACE {
 
 			constexpr bool operator!=(const zip_iterator& rhs) const;
 
-			constexpr value_type operator*();
+			constexpr reference operator*();
 
 		private:
 			constexpr void increment();
@@ -64,6 +65,10 @@ namespace ZIP_NAMESPACE {
 		using const_iterator = zip_iterator<decltype(std::declval<const T>().cbegin())...>;
 		using reverse_iterator = std::reverse_iterator<iterator>;
 		using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+		using value_type = typename iterator::value_type;
+		using reference = typename iterator::reference;
+		using const_reference = typename const_iterator::reference;
 
 		// Throws std::length_error if sizes of iterables don't match
 		constexpr zip_adaptor(T&&... iteratables);

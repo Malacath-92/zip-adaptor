@@ -49,6 +49,11 @@ int main() {
 		std::cout << "erase_const " + succeeded << std::endl;
 		erase_non_const();
 		std::cout << "erase_non_const " + succeeded << std::endl;
+
+		std::cout << std::endl;
+
+		join();
+		std::cout << "join " + succeeded << std::endl;
 	}
 	catch(std::logic_error& e) {
 		std::cout << e.what() << std::endl;

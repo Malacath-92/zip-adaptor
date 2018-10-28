@@ -24,4 +24,6 @@ void exceptions();
 void erase_const();
 void erase_non_const();
 
+void join();
+
 #endif

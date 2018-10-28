@@ -229,7 +229,7 @@ namespace ZIP_NAMESPACE {
 
 	template<class... T>
 	template<class... IterT>
-	inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>::value_type zip_adaptor<T...>::zip_iterator<IterT...>::operator*() {
+	inline constexpr typename zip_adaptor<T...>::dependent_template zip_iterator<IterT...>::reference zip_adaptor<T...>::zip_iterator<IterT...>::operator*() {
 		auto dereference_impl = [](IterT... iters) {
 			return std::forward_as_tuple(*iters...);
 		};

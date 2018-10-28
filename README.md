@@ -27,7 +27,7 @@ Use _zip_adaptor_ as follows:
         }
         return winningTeam;
     }
-<!-- 
+
 You may use different types of containers as long as they support range-based for loops. i.e. they support a begin() and end() function:
 
     #define ZIP_NAMESPACE
@@ -37,16 +37,17 @@ You may use different types of containers as long as they support range-based fo
     template<class... T>
     auto join(T&&... containers) {
         // Skipping ZIP_NAMESPACE because it is defined without value
-        auto zipped_containers = zip(std::forward<T>containers)...);
+        auto zipped_containers = zip(std::forward<T>(containers)...);
 
         using zipped_type = decltype(zipped_containers);
-        using zipped_value_type = zipped_type::value_type;
+        using zipped_value_type = typename zipped_type::value_type;
+        
         std::vector<zipped_value_type> joined_containers;
         joined_containers.reserve(zipped_containers.size());
         for (auto zipped : zipped_containers)
             joined_containers.push_back(zipped);
         return joined_containers; 
-    } -->
+    }
 
 ## Features
 

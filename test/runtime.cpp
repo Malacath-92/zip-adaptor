@@ -450,4 +450,38 @@ void erase_non_const() {
 		throw std::logic_error("erase_non_const " + failed + ": zipper.size() != 10");
 }
 
+void join() {
+    auto join = [](auto&&... containers) {
+        auto zipped_containers = zip(std::forward<decltype(containers)>(containers)...);
+
+        using zipped_type = decltype(zipped_containers);
+        using zipped_value_type = typename zipped_type::value_type;
+        std::vector<zipped_value_type> joined_containers;
+        joined_containers.reserve(zipped_containers.size());
+        for (auto zipped : zipped_containers)
+            joined_containers.push_back(zipped);
+        return joined_containers; 
+    };
+	std::vector<int> first = []() {
+		std::vector<int> first(50);
+		std::generate(first.begin(), first.end(), [i = 0]() mutable { return i++; });
+		return first;
+	}();
+	std::vector<int> second = []() {
+		std::vector<int> second(50);
+		std::generate(second.begin(), second.end(), [i = 0, j = 1]() mutable { return (++i) * (++j); });
+		return second;
+	}();
+	std::vector<int> third = [&]() {
+		std::vector<int> third(50);
+		std::generate(third.begin(), third.end(), [&, i = 0, j = 0]() mutable { return second[i++] / (first[j++] + 1); });
+		return third;
+	}();
+	auto joined = join(first, second, third);
+	for (auto [a, b, c, abc] : zip(first, second, third, joined)) {
+		if (std::make_tuple(a, b, c) != abc)
+			throw std::logic_error("join " + failed + ": std::make_tuple(a, b, c) != abc");
+	}
+}
+
 #endif
