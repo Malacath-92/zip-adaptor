@@ -11,16 +11,13 @@ namespace ZIP_NAMESPACE {
 	template<class... T>
 	class zip_adaptor;
 
-	template<class T>
-	using forwarded_type = decltype(std::forward<T>(std::declval<T>()));
-
-	#ifndef ZIP_VERBOSE
+#ifndef ZIP_VERBOSE
 	template<class... T>
-	constexpr zip_adaptor<forwarded_type<T>...> zip(T&& ...iteratables);
-	#else
+	constexpr zip_adaptor<T...> zip(T&& ...iteratables);
+#else
 	template<class... T>
-	constexpr zip_adaptor<forwarded_type<T>...> make_zip_adaptor(T&& ...iteratables);
-	#endif
+	constexpr zip_adaptor<T...> make_zip_adaptor(T&& ...iteratables);
+#endif
 
 	template<class... T>
 	class zip_adaptor {
@@ -33,7 +30,7 @@ namespace ZIP_NAMESPACE {
 			using reference = std::tuple<decltype(*std::declval<IterT>())...>;
 
 			constexpr zip_iterator(IterT... iters);
-			
+
 			zip_iterator() = delete;
 			constexpr zip_iterator(const zip_iterator&) = default;
 			constexpr zip_iterator(zip_iterator&&) = default;
@@ -117,9 +114,9 @@ namespace ZIP_NAMESPACE {
 			using type = std::remove_reference_t<U>;
 		};
 		template<class U>
-		using rvalue_ref_to_value_t = typename remove_rvalue_reference<U>::type;
+		using remove_rvalue_reference_t = typename remove_rvalue_reference<U>::type;
 
-		using iterable_tuple = std::tuple<rvalue_ref_to_value_t<T>...>;
+		using iterable_tuple = std::tuple<remove_rvalue_reference_t<T>...>;
 		iterable_tuple mIterables;
 	};
 }

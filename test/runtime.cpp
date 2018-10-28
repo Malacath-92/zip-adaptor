@@ -332,6 +332,10 @@ void rvalue_iteration() {
 
 		return zip(std::move(first), std::move(second), std::move(third));
 	}();
+
+	if (zipper.size() != 50)
+		throw std::logic_error("homogeneous_containers_homogeneous_types_non_const_iteration " + failed + ": zipper.size() != 50");
+
 	for(auto[a, b, c] : zipper) {
 		static_assert(std::is_same_v<decltype(a), int&>, "homogeneous_containers_homogeneous_types_non_const_iteration failed: typeof(a) != int&");
 		static_assert(std::is_same_v<decltype(b), int&>, "homogeneous_containers_homogeneous_types_non_const_iteration failed: typeof(b) != int&");
