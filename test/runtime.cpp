@@ -312,6 +312,51 @@ void heterogeneous_containers_heterogeneous_types_non_const_iteration() {
 	}
 }
 
+void rvalue_iteration() {
+	auto zipper = []() {
+		std::vector<int> first = []() {
+			std::vector<int> first(50);
+			std::generate(first.begin(), first.end(), [i = 0]() mutable { return i++; });
+			return first;
+		}();
+		std::vector<int> second = []() {
+			std::vector<int> second(50);
+			std::generate(second.begin(), second.end(), [i = 0, j = 1]() mutable { return (++i) * (++j); });
+			return second;
+		}();
+		std::vector<int> third = [&]() {
+			std::vector<int> third(50);
+			std::generate(third.begin(), third.end(), [&, i = 0, j = 0]() mutable { return second[i++] / (first[j++] + 1); });
+			return third;
+		}();
+
+		return zip(std::move(first), std::move(second), std::move(third));
+	}();
+	for(auto[a, b, c] : zipper) {
+		static_assert(std::is_same_v<decltype(a), int&>, "homogeneous_containers_homogeneous_types_non_const_iteration failed: typeof(a) != int&");
+		static_assert(std::is_same_v<decltype(b), int&>, "homogeneous_containers_homogeneous_types_non_const_iteration failed: typeof(b) != int&");
+		static_assert(std::is_same_v<decltype(c), int&>, "homogeneous_containers_homogeneous_types_non_const_iteration failed: typeof(c) != int&");
+
+		if(b != (a + 1) * (a + 2))
+			throw std::logic_error("homogeneous_containers_homogeneous_types_non_const_iteration " + failed + ": b != (a + 1) * (a + 2)");
+		if(c != b / (a + 1))
+			throw std::logic_error("homogeneous_containers_homogeneous_types_non_const_iteration " + failed + ": c != a / b");
+
+		a = 0;
+		b = 1;
+		c = -1;
+	}
+
+	for(auto[a, b, c] : zipper) {
+		if(a != 0)
+			throw std::logic_error("homogeneous_containers_homogeneous_types_non_const_iteration " + failed + ": a != 0");
+		if(b != 1)
+			throw std::logic_error("homogeneous_containers_homogeneous_types_non_const_iteration " + failed + ": b != 1");
+		if(c != -1)
+			throw std::logic_error("homogeneous_containers_homogeneous_types_non_const_iteration " + failed + ": c != -1");
+	}
+}
+
 void no_copies_no_moves_iteration() {
 	struct ExpensiveToCopyOrMove {
 		ExpensiveToCopyOrMove() = delete;

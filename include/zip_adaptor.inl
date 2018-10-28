@@ -31,8 +31,8 @@ namespace ZIP_NAMESPACE {
 	/// Adaptor implementation
 #ifndef ZIP_VERBOSE
 	template<class... T>
-	inline constexpr zip_adaptor<T...> zip(T&&... iteratables) {
-		return zip_adaptor<T...>(std::forward<T>(iteratables)...);
+	inline constexpr zip_adaptor<forwarded_type<T>...> zip(T&&... iteratables) {
+		return zip_adaptor<forwarded_type<T>...>(std::forward<T>(iteratables)...);
 	}
 #else
 	template<class... T>
@@ -44,8 +44,11 @@ namespace ZIP_NAMESPACE {
 	template<class... T>
 	inline constexpr zip_adaptor<T...>::zip_adaptor(T&&... iteratables) : mIterables(std::forward_as_tuple(std::forward<T>(iteratables)...)) {
 		const size_t firstSize = std::get<0>(mIterables).size();
-		bool sameSizes = ((iteratables.size() == firstSize) && ...);
-		if(!sameSizes)
+		auto check_size_impl = [&](auto&... iteratables) {
+			return ((iteratables.size() == firstSize) && ...);
+		};
+		bool sizeCheck = std::apply(check_size_impl, mIterables);
+		if(!sizeCheck)
 			throw std::length_error("Zipping containers of different length!");
 	}
 

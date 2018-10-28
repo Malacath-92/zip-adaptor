@@ -30,6 +30,11 @@ int main() {
 
 		std::cout << std::endl;
 
+		rvalue_iteration();
+		std::cout << "rvalue_iteration " + succeeded << std::endl;
+
+		std::cout << std::endl;
+
 		no_copies_no_moves_iteration();
 		std::cout << "no_copies_no_moves_iteration " + succeeded << std::endl;
 

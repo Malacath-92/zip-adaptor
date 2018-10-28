@@ -1,6 +1,7 @@
 #pragma once
 
 #include <tuple>
+#include <type_traits>
 
 #ifndef ZIP_NAMESPACE
 #define ZIP_NAMESPACE zip
@@ -10,9 +11,12 @@ namespace ZIP_NAMESPACE {
 	template<class... T>
 	class zip_adaptor;
 
+	template<class T>
+	using forwarded_type = decltype(std::forward<T>(std::declval<T>()));
+
 	#ifndef ZIP_VERBOSE
 	template<class... T>
-	constexpr zip_adaptor<T...> zip(T&& ...iteratables);
+	constexpr zip_adaptor<forwarded_type<T>...> zip(T&& ...iteratables);
 	#else
 	template<class... T>
 	constexpr zip_adaptor<T...> make_zip_adaptor(T&& ...iteratables);
@@ -99,7 +103,18 @@ namespace ZIP_NAMESPACE {
 		const_iterator erase(const_iterator first, const_iterator last);
 
 	private:
-		using iterable_tuple = std::tuple<T&...>;
+		template<class U, bool = std::is_rvalue_reference_v<U>>
+		struct remove_rvalue_reference {
+			using type = U;
+		};
+		template<class U>
+		struct remove_rvalue_reference<U, true> {
+			using type = std::remove_reference_t<U>;
+		};
+		template<class U>
+		using rvalue_ref_to_value_t = typename remove_rvalue_reference<U>::type;
+
+		using iterable_tuple = std::tuple<rvalue_ref_to_value_t<T>...>;
 		iterable_tuple mIterables;
 	};
 }
