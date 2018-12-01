@@ -361,6 +361,42 @@ void rvalue_iteration() {
 	}
 }
 
+void no_copies_iteration() {
+	struct ExpensiveToCopy {
+		ExpensiveToCopy() = delete;
+		constexpr ExpensiveToCopy(const ExpensiveToCopy&) = delete;
+		constexpr ExpensiveToCopy(ExpensiveToCopy&&) noexcept = default;
+		constexpr ExpensiveToCopy& operator=(const ExpensiveToCopy&) = delete;
+		constexpr ExpensiveToCopy& operator=(ExpensiveToCopy&&) noexcept = default;
+		constexpr ExpensiveToCopy(int _v) : v(_v) {}
+		int v;
+	};
+
+	auto zipped_range = zip(
+		[]() {
+			std::array<ExpensiveToCopy, 5> first = { 0, 1, 2, 3, 4 };
+			return std::vector(std::make_move_iterator(first.begin()), std::make_move_iterator(first.end()));
+		}(),
+		[]() {
+			std::array<ExpensiveToCopy, 5> first = { 3, 6, 9, 12, 15 };
+			return std::vector(std::make_move_iterator(first.begin()), std::make_move_iterator(first.end()));
+		}(),
+		[]() {
+			std::array<ExpensiveToCopy, 5> first = { 0, 6, 18, 36, 60 };
+			return std::vector(std::make_move_iterator(first.begin()), std::make_move_iterator(first.end()));
+		}()
+	);
+
+	for(auto[a, b, c] : zipped_range) {
+		static_assert(std::is_same_v<decltype(a), ExpensiveToCopy&>, "no_copies_iteration failed: decltpye(a) != ExpensiveToCopy&");
+		static_assert(std::is_same_v<decltype(b), ExpensiveToCopy&>, "no_copies_iteration failed: decltpye(b) != ExpensiveToCopy&");
+		static_assert(std::is_same_v<decltype(c), ExpensiveToCopy&>, "no_copies_iteration failed: decltpye(c) != ExpensiveToCopy&");
+		if(b.v != (a.v + 1) * 3)
+			throw std::logic_error("no_copies_iteration " + failed + ": b.v != (a.v + 1) * 3");
+		if(c.v != a.v * b.v)
+			throw std::logic_error("no_copies_iteration " + failed + ": c.v != a.v * b.v");
+	}
+}
 void no_copies_no_moves_iteration() {
 	struct ExpensiveToCopyOrMove {
 		ExpensiveToCopyOrMove() = delete;

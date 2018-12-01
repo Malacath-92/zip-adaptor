@@ -17,6 +17,7 @@ void heterogeneous_containers_heterogeneous_types_non_const_iteration();
 
 void rvalue_iteration();
 
+void no_copies_iteration();
 void no_copies_no_moves_iteration();
 
 void exceptions();
