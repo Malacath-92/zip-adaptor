@@ -13,10 +13,16 @@ namespace ZIP_NAMESPACE {
 
 #ifndef ZIP_VERBOSE
 	template<class... T>
-	constexpr zip_adaptor<T...> zip(T&& ...iteratables);
+	constexpr auto zip(T&&... iteratables) {
+		using result_zip_adaptor = zip_adaptor<decltype(std::forward<decltype(iteratables)>(iteratables))...>;
+		return result_zip_adaptor(std::forward<decltype(iteratables)>(iteratables)...);
+	}
 #else
 	template<class... T>
-	constexpr zip_adaptor<T...> make_zip_adaptor(T&& ...iteratables);
+	constexpr auto make_zip_adaptor(T&&... iteratables) {
+		using result_zip_adaptor = zip_adaptor<decltype(std::forward<decltype(iteratables)>(iteratables))...>;
+		return result_zip_adaptor(std::forward<decltype(iteratables)>(iteratables)...);
+	}
 #endif
 
 	template<class... T>
