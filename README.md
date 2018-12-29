@@ -4,8 +4,8 @@ Header only library for range-based for loop on a set of heterogeneous container
 
 ## Requirements
 
-* Needs a C++17 compatible compiler
-* CMake is suggested for compiling tests 
+* A C++17 conforming compiler
+* CMake for compiling tests 
 
 ## Usage
 
